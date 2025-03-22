@@ -144,17 +144,23 @@ public class HostelManagementSystem {
 	    }
 		
 		private static void viewAvailableRooms(Connection connection) {
-			 try {
-		            String sql = "SELECT room_id, capacity FROM rooms WHERE status = 'Vacant'";
-		            try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-		                System.out.println("Available Rooms:");
-		                while (rs.next()) {
-		                    System.out.println("Room ID: " + rs.getInt("room_id") + " | Capacity: " + rs.getInt("capacity"));
-		                }
-		            }
-		        } catch (SQLException e) {
-		            System.err.println("Database Error: " + e.getMessage());
-		        }
+			String sql = "SELECT room_id, capacity FROM rooms WHERE status = 'Available'";
+	        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+	            ResultSet rs = pstmt.executeQuery();
+	            System.out.println("Available Rooms:");
+	            boolean found = false;
+	            while (rs.next()) {
+	                int roomId = rs.getInt("room_id");
+	                int capacity = rs.getInt("capacity");
+	                System.out.println("Room ID: " + roomId + ", Capacity: " + capacity);
+	                found = true;
+	            }
+	            if (!found) {
+	                System.out.println("No rooms available.");
+	            }
+	        } catch (SQLException e) {
+	            System.err.println("Database Error: " + e.getMessage());
+	        }
 			
 			
 		}
